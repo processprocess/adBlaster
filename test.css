@@ -1,0 +1,6 @@
+.test {
+  display: none;
+  pointer-events: none;
+  opacity: 0;
+  cursor: crosshair;
+}

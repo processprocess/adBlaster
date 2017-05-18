@@ -1,42 +1,58 @@
 console.clear()
-// let firstHref = document.querySelectorAll('a[href^="http"]')[0].getAttribute('href');
-// console.log(firstHref);
 
 let isActive = false;
 
 let blastedElements = []
 let blastedFrames = []
 
+let uiElement;
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
+    // enable click events
     if( request.message === "actionOn" ) {
 
       console.log('on');
       isActive = true;
 
+      // set up css
       var uiStyle = document.createElement('style');
       uiStyle.type = 'text/css';
-      uiStyle.innerHTML = `.uiStyle { position:absolute; background:black; width:100px; Height:100px; }`;
+      uiStyle.innerHTML = `
+        .uiStyle {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: black;
+          color: white;
+          width: 100px;
+          Height: 100px;
+          z-index: 2147483647;
+        }
+
+        .highlightClass {
+          outline: 1px solid pink
+        }
+
+        .blastClass {
+          display: none;
+          opacity: .2;
+        }
+
+        .notVisible {
+          display: none;
+          pointer-events: none;
+          opacity: 0;
+        }
+
+      `;
+
       document.getElementsByTagName('head')[0].appendChild(uiStyle);
 
-      var uiElement = document.createElement('div');
+      uiElement = document.createElement('div');
       uiElement.classList.add('uiStyle');
       document.body.append(uiElement);
-
-
-      var highlightClass = document.createElement('style');
-      highlightClass.type = 'text/css';
-      highlightClass.innerHTML = `.highlightClass { outline: 1px solid pink }`;
-      document.getElementsByTagName('head')[0].appendChild(highlightClass);
-
-      var blastClass = document.createElement('style');
-      blastClass.type = 'text/css';
-      blastClass.innerHTML = `.blastClass { display: none; opacity: .2;}`;
-      // blastClass.innerHTML = `.blastClass { transition: opacity .5s; opacity: .2; }`;
-      // blastClass.innerHTML = `.blastClass { transition: opacity .5s; opacity: .2; pointer-events: none; }`;
-      document.getElementsByTagName('head')[0].appendChild(blastClass);
-
 
       let iframes = document.querySelectorAll('iframe')
 
@@ -99,9 +115,10 @@ chrome.runtime.onMessage.addListener(
 
     }
 
-
+    // restore page, dissable click events
     else if( request.message === "actionOff" ) {
       console.log('off');
+      document.body.remove(uiElement);
       isActive = false;
       blastedElements.forEach((element) => {
         element.classList.remove('blastClass');
