@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>spinUp</title>
+<style>
+  .testDiv {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: black;
+    right: 50%;
+    top: 50%
+  }
+  .notVisible {
+    display: none;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+
+<div class='testDiv'></div>
+
+<script type="text/javascript" src="./libgif.js"></script>
+
+<script>
+
+console.clear()
+
+function makeWrapElement() {
+  let wrapEl = document.createElement('div');
+  wrapEl.classList.add('notVisible');
+  wrapEl.setAttribute('style', `
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  `);
+  // transform: translate(-100%, -100%);
+  document.body.append(wrapEl);
+  return wrapEl;
+}
+
+function makeImgElement() {
+  let wrapper = makeWrapElement()
+  let testGif = document.createElement('img');
+  wrapper.append(testGif);
+  return { testGif, wrapper };
+}
+
+class GifPlayer {
+  constructor({ testGif, wrapper }, gifClip){
+    this.el = testGif,
+    this.el.setAttribute('rel:animated_src', gifClip),
+    this.wrapper = wrapper,
+    this.SuperGifPlayer = new SuperGif({
+      gif: this.el,
+      auto_play: 0,
+      loop_mode: false,
+      progressbar_height: 0,
+      on_end: (e) => { this.handleEnd() }
+    })
+    this.SuperGifPlayer.load()
+  }
+  makeWrapElement() {
+    let wrapEl = document.createElement('div');
+    wrapEl.classList.add('notVisible');
+    document.body.append(wrapEl);
+    return wrapEl;
+  }
+  play(e) {
+    this.SuperGifPlayer.play();
+    this.wrapper.classList.remove('notVisible');
+    this.wrapper.style.left = e.target.offsetLeft + e.target.offsetWidth / 2 + 'px';
+    this.wrapper.style.top = e.target.offsetTop + e.target.offsetHeight / 2 + 'px';
+    // this.wrapper.style.left = e.target.offsetLeft + e.target.offsetWidth / 2 + Math.random() * e.target.offsetWidth + 'px';
+    // this.wrapper.style.top = e.target.offsetTop + e.target.offsetHeight / 2 + Math.random() * e.target.offsetHeight + 'px';
+  }
+  handleEnd() {
+    this.wrapper.remove();
+  }
+}
+
+let loadedExplosions = [];
+
+function genExplosionSet() {
+  let newGif = new GifPlayer( makeImgElement(), `./bigBlast/expl.gif` );
+  loadedExplosions.push(newGif);
+  // while (loadedExplosions.length < 5){
+  //   let randBlastFile = Math.floor(Math.random() * 6) + 1;
+  //   (() => {
+  //     let newGif = new GifPlayer( makeImgElement(), `./blasts/${randBlastFile}.gif` );
+  //     loadedExplosions.push(newGif);
+  //   })()
+  // }
+}
+genExplosionSet()
+
+window.addEventListener('click', function(e) {
+  if (e.target.nodeName === 'BODY' || e.target.nodeName === 'CANVAS' || e.target.nodeName === 'HTML') return;
+  loadedExplosions.pop().play(e);
+  // while(loadedExplosions.length) {
+  //   loadedExplosions.pop().play(e);
+  // }
+  genExplosionSet();
+})
+
+// load random gifs into array
+
+</script>
+
+</body>
+</html>

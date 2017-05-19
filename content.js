@@ -51,22 +51,6 @@ class NewBlaster {
   }
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-
-  if (activeWindows.includes(request.url)) {
-    pageBlaster.toggleActive();
-    uiElement.classList.toggle('blastClass');
-  } else {
-    generateUI()
-    activeWindows.push(request.url)
-    // generate blaster
-    pageBlaster = new NewBlaster();
-    pageBlaster.checkActive();
-    pageBlaster.init();
-  }
-
-});
-
 function generateUI() {
   uiElement = document.createElement('div');
   uiElement.setAttribute('class', 'uiStyle noBlast')
@@ -89,6 +73,23 @@ function handleUiEvents(e) {
     uiElement.querySelector('.count').textContent = blastedElements.length;
   }
 }
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
+  if (activeWindows.includes(request.url)) {
+    pageBlaster.toggleActive();
+    uiElement.classList.toggle('blastClass');
+  } else {
+    generateUI()
+    activeWindows.push(request.url)
+    // generate blaster
+    pageBlaster = new NewBlaster();
+    pageBlaster.checkActive();
+    pageBlaster.init();
+  }
+
+});
+
 
 // when blasted
 // div is created

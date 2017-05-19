@@ -12,7 +12,6 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 
 
-
 // let isOn = false;
 //
 // chrome.browserAction.onClicked.addListener(function(tab) {
